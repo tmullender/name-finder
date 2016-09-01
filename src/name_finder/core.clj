@@ -4,10 +4,18 @@
             [name-finder.meanings :refer [fetch-wikis]])
   (:gen-class))
 
-(defn parse-file [file]
+(defn parse-file 
+  "Takes a file containing a list of names and 
+   applies the name-filter filter in the filters namespace"
+  [file]
   (filter name-filter (take 1000 (map str/trim (str/split-lines (slurp file))))))
 
-(defn find-names-with-meanings [file]
+(defn find-names-with-meanings 
+  "Takes a file containing a list of names and 
+   applies the filters in the filters namespace before 
+   looking up the meanings on wikipedia and 
+   returning a map of name to meaning"
+  [file]
   (let [names (parse-file file)
         meanings (fetch-wikis (set (map first names)))]
     (into (sorted-map) (map #(hash-map %1 (meanings %1)) (filter #(get meanings %1) names)))
